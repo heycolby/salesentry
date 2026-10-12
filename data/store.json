@@ -1,0 +1,154 @@
+{
+  "leads": {
+    "ceb149a7-8a5e-4113-a0df-a65252039d17": {
+      "id": "ceb149a7-8a5e-4113-a0df-a65252039d17",
+      "name": "Marcus Vance",
+      "email": "marcus@test.com",
+      "phone": "(555) 789-1234",
+      "utm_source": "",
+      "watched_seconds": 45,
+      "clicked_lets_work": true,
+      "status": "hired",
+      "created_at": 1791682104.2725341,
+      "updated_at": 1791682286.6232584
+    }
+  },
+  "members": {
+    "admin@example.com": {
+      "email": "admin@example.com",
+      "name": "Course Administrator",
+      "role": "admin",
+      "status": "active",
+      "created_at": 1791682073.231858,
+      "confirmed_at": 1791682073.231858,
+      "progress": {}
+    },
+    "marcus@test.com": {
+      "email": "marcus@test.com",
+      "name": "Marcus Vance",
+      "phone": "(555) 789-1234",
+      "role": "member",
+      "status": "active",
+      "created_at": 1791682286.6227484,
+      "confirmed_at": 1791682286.6227484,
+      "last_login_at": null,
+      "progress": {
+        "lesson-1-1": true
+      }
+    }
+  },
+  "login_tokens": {
+    "41ff95eccef5336130f6cc19abc8e5fdcd54cbe291fc1be8019dc71abaf7e0c1": {
+      "email": "admin@example.com",
+      "purpose": "login",
+      "expires_at": 1791768523.1912236,
+      "used_at": null
+    },
+    "a591a2d565c384ef8a480a2ecd999ba129b4858dd82953a33867ce19874d7b76": {
+      "email": "admin@example.com",
+      "purpose": "login",
+      "expires_at": 1791768576.107719,
+      "used_at": null
+    },
+    "1c0fc4e9850f758128cd3f0973fa2bc8df679607fb18860f53a082258917248b": {
+      "email": "admin@example.com",
+      "purpose": "login",
+      "expires_at": 1791768610.5566876,
+      "used_at": null
+    },
+    "60e48d02b9b5b4a4a8eeb4c1376aa66c73c5c32b070cbeb1356a33f6c2d12d6b": {
+      "email": "admin@example.com",
+      "purpose": "login",
+      "expires_at": 1791768686.5887537,
+      "used_at": 1791682286.6012845
+    },
+    "93969c8905240f6f3a80c875ffc5bdcbef77361967eab8a8240aae40c8ab8e78": {
+      "email": "marcus@test.com",
+      "purpose": "login",
+      "expires_at": 1791768686.6238213,
+      "used_at": 1791682286.628049
+    }
+  },
+  "sessions": {
+    "a70562dbed60bfa10742cc0fe6a4ef257f27e4a30f8e14bdaa2cd9746473f2bc": {
+      "email": "admin@example.com",
+      "created_at": 1791682286.602353,
+      "expires_at": 1799458286.602353
+    },
+    "92ba36ba582df3968501998378c181a0ef2bbcf32f9f2bdb474c630e9264207e": {
+      "email": "marcus@test.com",
+      "created_at": 1791682286.6285663,
+      "expires_at": 1799458286.6285663
+    }
+  },
+  "modules": [
+    {
+      "id": "module-1",
+      "title": "PROTOCOL 01: System Architecture & Consultative Framework",
+      "description": "Operational principles, compensation models, and high-ticket pipeline execution.",
+      "order": 1,
+      "lessons": [
+        {
+          "id": "lesson-1-1",
+          "title": "01.1 Operational Command & Daily Execution Standards",
+          "duration": "8 min",
+          "type": "video",
+          "video_url": "",
+          "content_markdown": "# Operational Protocol: Daily Standards\n\nC30 Digital operates as systems architects. Consultative sales agents execute systematic diagnoses of client operational bottlenecks rather than standard transactional pitches.\n\n### Daily Execution Standard:\n1. **08:30 Pipeline Triage**: Review inbound intake routing and qualify organizational fit.\n2. **Consultative Touchpoints**: Multi-channel diagnostic touches within 12 hours of dispatch.\n3. **Telemetry & Call Logs**: Systematically record operational diagnoses into internal CRM records immediately following each call.\n\n> **Operational Standard**: Consistency in diagnostic qualification determines client retention and deal execution margin.\n"
+        },
+        {
+          "id": "lesson-1-2",
+          "title": "01.2 Compensation Architecture & Margin Acceleration",
+          "duration": "12 min",
+          "type": "article",
+          "video_url": "",
+          "content_markdown": "# Compensation Architecture\n\nCompensation tiers reflect direct closed revenue contribution and gross deal margin.\n\n- **Baseline Tier**: 15% net commission on closed enterprise contracts.\n- **Volume Accelerator**: Closing 5+ qualified deployments within a calendar cycle elevates all transactions that month to 20% margin.\n- **Disbursement Schedule**: Bi-weekly automated wire or direct deposit following contract execution.\n"
+        }
+      ]
+    },
+    {
+      "id": "module-2",
+      "title": "PROTOCOL 02: The Diagnostic Discovery Framework",
+      "description": "Systematic evaluation of legacy software friction, manual admin leaks, and architecture gaps.",
+      "order": 2,
+      "lessons": [
+        {
+          "id": "lesson-2-1",
+          "title": "02.1 The 5-Stage Diagnostic Framework",
+          "duration": "15 min",
+          "type": "video",
+          "video_url": "",
+          "content_markdown": "# The Diagnostic Discovery Framework\n\nWe never pitch before diagnosing. Inefficient organizations do not need generic persuasion; they need infrastructure.\n\n### The 5 Diagnostic Stages:\n1. **System Framing**: Establish agenda, operational focus, and mutual diagnostic criteria.\n2. **Current Architecture**: Map existing legacy workflow and manual touchpoints.\n3. **Structural Bottleneck**: Isolate where labor or margins leak (handoff delays, dispatch lag, redundant data entry).\n4. **Economic Cost of Inaction**: Calculate monthly operational overhead caused by the current bottleneck.\n5. **Prescription**: Prescribe targeted automation architecture or command center deployment.\n"
+        },
+        {
+          "id": "lesson-2-2",
+          "title": "02.2 Resolving Structural Objections",
+          "duration": "18 min",
+          "type": "video",
+          "video_url": "",
+          "content_markdown": "# Resolving Structural Objections\n\n### Pattern 1: \"We already have software for this.\"\n*Diagnosis:* \"Most organizations run multiple point solutions that fail to communicate. Where in your current workflow are staff manually copying data between systems?\"\n\n### Pattern 2: \"We need to delay this until next quarter.\"\n*Diagnosis:* \"Delaying simply compounds the monthly margin leakage you identified in dispatch handoffs. If this maps to what you are observing in your operations, we can review the internal architecture now.\"\n"
+        }
+      ]
+    },
+    {
+      "id": "module-3",
+      "title": "PROTOCOL 03: Field Certification & Dispatch Activation",
+      "description": "Verification of diagnostic mastery prior to active lead routing.",
+      "order": 3,
+      "lessons": [
+        {
+          "id": "lesson-3-1",
+          "title": "03.1 Roleplay Evaluation & Account Provisioning",
+          "duration": "5 min",
+          "type": "article",
+          "video_url": "",
+          "content_markdown": "# Deployment Certification\n\nTo be activated for live candidate routing:\n1. Review the diagnostic frameworks in Protocol 02.\n2. Complete your 20-minute operational roleplay review with Colby.\n3. Upon certification, CRM credentials and live pipeline access are provisioned.\n"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "slack_webhook_url": "",
+    "intro_video_url": ""
+  }
+}

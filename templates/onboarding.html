@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}C30 Digital — Agent Training Protocol{% endblock %}
+
+{% block content %}
+<main class="container">
+  <!-- Header -->
+  <div class="course-header">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+      <div>
+        <div class="meta-code-tag">ACCESS::VERIFIED // OPERATIONAL_HUB</div>
+        <h1 style="font-family: var(--font-heading); font-size: clamp(28px, 4vw, 56px); font-weight: 700; letter-spacing: -0.03em;">
+          Sales Architecture & Protocol Training
+        </h1>
+        <p style="color: var(--color-secondary); font-size: 15px; margin-top: 4px;">
+          Candidate: <strong style="color: white;">{{ member.name or member.email }}</strong>. Complete all diagnostic protocols to initiate account provisioning and live lead routing.
+        </p>
+      </div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="progress-banner">
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--color-secondary); text-transform: uppercase;">
+          TRAINING_TELEMETRY::COMPLETION
+        </div>
+        <div style="font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: white; margin-top: 2px;">
+          {{ completion_percentage }}% CERTIFIED
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 12px; color: var(--color-secondary);">
+          {{ completed_count }} / {{ total_lessons }} protocols verified
+        </div>
+      </div>
+      <div class="progress-bar-bg" style="max-width: 440px;">
+        <div class="progress-bar-fill" style="width: {{ completion_percentage }}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modules List -->
+  <div class="modules-container">
+    {% for module in modules %}
+      <div class="module-card">
+        <div class="module-header">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: var(--color-primary); letter-spacing: 0.05em;">
+              SECTION_{{ "%02d"|format(loop.index) }}
+            </div>
+            <h2 class="module-title">{{ module.title }}</h2>
+            <p style="font-size: 14px; color: var(--color-secondary); margin-top: 2px;">
+              {{ module.description }}
+            </p>
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 12px; color: var(--color-secondary); white-space: nowrap;">
+            {{ module.lessons|length }} UNITS
+          </span>
+        </div>
+
+        <ul class="lesson-list">
+          {% for lesson in module.lessons %}
+            {% set is_done = progress.get(lesson.id, false) %}
+            <li class="lesson-item">
+              <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="lesson-left">
+                  <div class="lesson-check {% if is_done %}completed{% endif %}">
+                    {% if is_done %}✓{% endif %}
+                  </div>
+                  <div>
+                    <span class="lesson-title-text">{{ lesson.title }}</span>
+                    <span class="lesson-duration">[{{ lesson.duration }}]</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="spec-badge" style="padding: 2px 8px; font-size: 11px;">
+                    {{ lesson.type|upper }}
+                  </span>
+                  <span style="color: var(--color-secondary); font-size: 14px;">→</span>
+                </div>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}

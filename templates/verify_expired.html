@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Link Expired or Invalid • Sales Course Hub{% endblock %}
+
+{% block content %}
+<main class="container-narrow" style="padding-top: 4rem;">
+  <div class="glass-card" style="max-width: 440px; margin: 0 auto; text-align: center;">
+    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚠️</div>
+    <h1 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">
+      Link Expired or Already Used
+    </h1>
+    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.5rem;">
+      For your security, sign-in links can only be used once and expire after 24 hours.
+    </p>
+
+    <a href="{{ url_for('login_page') }}" class="btn-primary">
+      Request a New Link →
+    </a>
+  </div>
+</main>
+{% endblock %}

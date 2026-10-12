@@ -1,0 +1,806 @@
+/* ============================================================
+   C30 DIGITAL — SYSTEM DESIGN SYSTEM
+   Execution Standards & Architectural Tokens
+   ============================================================
+   Design Tokens:
+     Primary Color:    #39BDF8 (Sky Blue) - brand accent, indicators
+     Secondary Color:  #A6ABB5 (Muted Slate) - subtle borders, metadata
+     Accent Color:     #39BDF8 (Sky Blue) - highlight triggers, active states
+     Background Color: #141414 (Dark Terminal) - dark-mode canvas
+     Text Primary:     #141414 (Off-Black) - on light badges / buttons
+     Link Color:       #A6ABB5 (Muted Slate) - inline refs, understated triggers
+
+   Typography:
+     Primary Typeface: Inter (Body, UI, Operational Data)
+     Heading Typeface: Space Grotesk (Display, Section Markers, Headlines)
+     Display / H1:     clamp(34px, 5.5vw, 96px)
+     Section / H2:     clamp(24px, 4vw, 72px)
+     Body / Text:      clamp(15px, 2vw, 20px)
+
+   Layout & Spacing:
+     Base Unit Grid:   8px increment (8px, 16px, 24px, 32px, 64px)
+     Border Radius:    0px strictly enforced across all UI elements,
+                       containers, cards, and system inputs.
+                       (The avatar circle keeps its circular aperture as specified).
+     Visual Tone:      Terminal aesthetics, stark, clinical, industrial control panel.
+   ============================================================ */
+
+:root {
+  --color-primary: #39BDF8;
+  --color-primary-hover: #0284C7;
+  --color-primary-dim: rgba(57, 189, 248, 0.12);
+
+  --color-secondary: #A6ABB5;
+  --color-accent: #39BDF8;
+  --color-bg: #141414;
+  --color-surface: #18181A;
+  --color-surface-elevated: #1F1F23;
+  --color-border: #2D3139;
+  --color-border-subtle: #24272E;
+  --color-border-active: #39BDF8;
+
+  --color-text-on-dark: #ECEEF2;
+  --color-text-secondary: #A6ABB5;
+  --color-text-dark: #141414;
+  --color-link: #A6ABB5;
+  --color-link-hover: #39BDF8;
+
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', monospace, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-h1: clamp(32px, 5.2vw, 96px);
+  --text-h2: clamp(22px, 3.8vw, 72px);
+  --text-body: clamp(15px, 1.8vw, 20px);
+
+  /* Strictly 0px Border Radius */
+  --radius-strict: 0px;
+
+  --spacing-1: 8px;
+  --spacing-2: 16px;
+  --spacing-3: 24px;
+  --spacing-4: 32px;
+  --spacing-8: 64px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 !important; /* Strict 0px across all elements */
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-on-dark);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Industrial Grid Background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(166, 171, 181, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(166, 171, 181, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+h1, .text-h1 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h1);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--color-text-on-dark);
+}
+
+h2, .text-h2 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-text-on-dark);
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+/* ============================================================
+   TOP BAR / NAVIGATION (CLINICAL COMMAND BAR)
+   ============================================================ */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #141414;
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px 24px;
+}
+
+.nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(15px, 2vw, 18px);
+  letter-spacing: -0.02em;
+  color: var(--color-text-on-dark);
+}
+
+.system-status-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-primary-dim);
+  border: 1px solid rgba(57, 189, 248, 0.3);
+  padding: 2px 8px;
+  letter-spacing: 0.08em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--color-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.nav-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--color-border);
+  background: #1A1A1C;
+  color: var(--color-secondary);
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ============================================================
+   CONTAINER & LAYOUT
+   ============================================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.container-narrow {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 16px 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.terminal-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 24px;
+  position: relative;
+}
+
+/* ============================================================
+   HERO & BIO LEAD SECTION
+   ============================================================ */
+
+.bio-hero {
+  text-align: center;
+  padding-top: 4px;
+  padding-bottom: 12px;
+}
+
+.bio-avatar {
+  width: 120px;
+  height: auto;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 auto 12px auto;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.bio-avatar-img {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: contain;
+  border: none !important;
+}
+
+.meta-code-tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.bio-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-h1);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin-bottom: 8px;
+  color: var(--color-text-on-dark);
+}
+
+.bio-title .accent-text {
+  color: var(--color-primary);
+}
+
+.bio-subtitle {
+  color: var(--color-secondary);
+  font-size: 15px;
+  max-width: 540px;
+  margin: 0 auto 12px auto;
+  line-height: 1.5;
+}
+
+.diagnostic-specs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.spec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  background: #141414;
+  color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.spec-badge .accent {
+  color: var(--color-primary);
+}
+
+/* ============================================================
+   TERMINAL LEAD INTAKE FORM
+   ============================================================ */
+
+.lead-form-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+  text-align: left;
+}
+
+.form-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.form-title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-on-dark);
+}
+
+.form-id-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0E0E10;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-on-dark);
+  font-family: var(--font-body);
+  font-size: 15px;
+  transition: border-color 0.15s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: #121214;
+}
+
+/* Clinical Action Button: Primary #39BDF8, Text #141414, 0px border radius */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #7dd3fc;
+}
+
+.btn-primary:active {
+  background: #0284c7;
+}
+
+/* ============================================================
+   VIDEO MONITOR & LET'S WORK INITIATION
+   ============================================================ */
+
+.video-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #101012;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid var(--color-border);
+}
+
+.play-mock-btn {
+  width: 64px;
+  height: 64px;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.15s ease;
+}
+
+.play-mock-btn:hover {
+  background: #7dd3fc;
+}
+
+/* "LET'S WORK" CTA (Smallest operational nudge, industrial precision) */
+.cta-lets-work-wrapper {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.btn-lets-work {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 24px;
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-lets-work:hover {
+  background: #7dd3fc;
+}
+
+/* ============================================================
+   ONBOARDING REPOSITORY & MODULES
+   ============================================================ */
+
+.course-header {
+  margin-bottom: 32px;
+}
+
+.progress-banner {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #0E0E10;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.module-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.module-header {
+  padding: 16px 20px;
+  background: #141414;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.module-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-on-dark);
+}
+
+.lesson-list {
+  list-style: none;
+}
+
+.lesson-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.15s ease;
+}
+
+.lesson-item:last-child {
+  border-bottom: none;
+}
+
+.lesson-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.lesson-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lesson-check {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--color-secondary);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: white;
+}
+
+.lesson-check.completed {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-dark);
+  font-weight: 800;
+}
+
+.lesson-title-text {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-text-on-dark);
+}
+
+.lesson-duration {
+  font-family: var(--font-mono);
+  color: var(--color-secondary);
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+/* ============================================================
+   LESSON DETAIL
+   ============================================================ */
+
+.lesson-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .lesson-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lesson-content-body {
+  line-height: 1.7;
+  font-size: var(--text-body);
+}
+
+.lesson-content-body h1, .lesson-content-body h2 {
+  font-family: var(--font-heading);
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.lesson-content-body p {
+  margin-bottom: 14px;
+  color: #D1D5DB;
+}
+
+.lesson-content-body blockquote {
+  border-left: 3px solid var(--color-primary);
+  background: #141416;
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: var(--color-text-on-dark);
+}
+
+.lesson-content-body ul, .lesson-content-body ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+  color: #D1D5DB;
+}
+
+/* ============================================================
+   ADMIN COMMAND CENTER
+   ============================================================ */
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--color-secondary);
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn.active {
+  background: #1F1F24;
+  color: var(--color-primary);
+  border-color: var(--color-border);
+  border-bottom-color: var(--color-primary);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+  border-bottom: 1px solid var(--color-border);
+  background: #141414;
+}
+
+.admin-table td {
+  padding: 14px;
+  font-size: 15px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.applied {
+  background: rgba(57, 189, 248, 0.12);
+  color: var(--color-primary);
+  border: 1px solid rgba(57, 189, 248, 0.4);
+}
+
+.status-badge.watching {
+  background: rgba(166, 171, 181, 0.12);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.status-badge.hired {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-hire {
+  background: var(--color-primary);
+  color: var(--color-text-dark);
+  border: none;
+}
+
+.btn-hire:hover {
+  background: #7dd3fc;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  max-width: 520px;
+  width: 100%;
+  padding: 28px;
+  text-align: center;
+}
+
+.text-center { text-align: center; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }

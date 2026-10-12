@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} • Sales Onboarding{% endblock %}
+
+{% block content %}
+<main class="container">
+  <div style="margin-bottom: 1.25rem;">
+    <a href="{{ url_for('onboarding_portal') }}" style="color: var(--text-muted); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+      <span>←</span> Back to All Modules
+    </a>
+  </div>
+
+  <div class="lesson-layout">
+    <!-- Main Content Area -->
+    <div>
+      <div style="margin-bottom: 1.5rem;">
+        <span class="badge-pill mb-1">{{ module.title }}</span>
+        <h1 style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; margin-top: 0.35rem;">
+          {{ lesson.title }}
+        </h1>
+        <div style="display: flex; align-items: center; gap: 1rem; color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem;">
+          <span>⏱️ Duration: {{ lesson.duration }}</span>
+          <span>•</span>
+          <span>Format: {{ lesson.type|capitalize }}</span>
+        </div>
+      </div>
+
+      <!-- Video Player (If lesson has video) -->
+      {% if lesson.type == 'video' %}
+        <div class="video-container">
+          {% if video_url %}
+            <video 
+              id="lessonVideo" 
+              class="video-element" 
+              src="{{ video_url }}" 
+              controls 
+              playsinline
+            >
+              Your browser does not support HTML5 video.
+            </video>
+          {% else %}
+            <div class="video-placeholder">
+              <div class="play-mock-btn">▶</div>
+              <h3 style="font-family: var(--font-heading); font-weight: 700; margin-bottom: 0.5rem;">
+                Video Lesson: {{ lesson.title }}
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 440px;">
+                (Attach your Google Cloud Storage video URL in the Admin hub to stream here).
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- Lesson Body Content (Sanitized Markdown / Guide) -->
+      <div class="glass-card mt-2">
+        <div class="lesson-content-body">
+          {{ lesson.content_markdown | markdown | safe }}
+        </div>
+      </div>
+
+      <!-- Completion and Navigation Buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <button 
+          id="btnToggleComplete" 
+          class="btn-sm" 
+          style="padding: 0.75rem 1.25rem; font-size: 0.95rem; border-radius: var(--radius-md); background: {% if is_completed %}rgba(16, 185, 129, 0.2){% else %}var(--bg-glass){% endif %}; border: 1px solid {% if is_completed %}var(--success){% else %}var(--border-glass){% endif %}; color: {% if is_completed %}#34d399{% else %}white{% endif %};"
+          onclick="toggleLessonComplete('{{ lesson.id }}')"
+        >
+          <span id="completeIcon">{% if is_completed %}✓{% else %}○{% endif %}</span>
+          <span id="completeText">{% if is_completed %}Completed{% else %}Mark as Complete{% endif %}</span>
+        </button>
+
+        {% if next_lesson %}
+          <a href="{{ url_for('view_lesson', lesson_id=next_lesson.id) }}" class="btn-primary" style="width: auto; padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+            <span>Next: {{ next_lesson.title }}</span>
+            <span>→</span>
+          </a>
+        {% else %}
+          <a href="{{ url_for('onboarding_portal') }}" class="btn-primary" style="width: auto; padding: 0.75rem 1.5rem; font-size: 0.95rem;">
+            <span>Finish Training 🎉</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Sidebar: Module Outline -->
+    <div>
+      <div class="glass-card" style="padding: 1.5rem;">
+        <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;">
+          In This Module
+        </h3>
+        <ul style="list-style: none;">
+          {% for l in module.lessons %}
+            {% set active_now = (l.id == lesson.id) %}
+            {% set done = member.progress.get(l.id, false) %}
+            <li style="margin-bottom: 0.6rem;">
+              <a href="{{ url_for('view_lesson', lesson_id=l.id) }}" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.88rem; background: {% if active_now %}rgba(99, 102, 241, 0.18){% else %}transparent{% endif %}; color: {% if active_now %}#a5b4fc{% else %}var(--text-muted){% endif %}; font-weight: {% if active_now %}600{% else %}400{% endif %};">
+                <span style="font-size: 0.8rem; color: {% if done %}var(--success){% else %}var(--text-dim){% endif %};">
+                  {% if done %}✓{% else %}•{% endif %}
+                </span>
+                <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ l.title }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let isDone = {{ 'true' if is_completed else 'false' }};
+
+  async function toggleLessonComplete(lessonId) {
+    isDone = !isDone;
+    const icon = document.getElementById('completeIcon');
+    const text = document.getElementById('completeText');
+    const btn = document.getElementById('btnToggleComplete');
+
+    icon.innerText = isDone ? '✓' : '○';
+    text.innerText = isDone ? 'Completed' : 'Mark as Complete';
+    btn.style.background = isDone ? 'rgba(16, 185, 129, 0.2)' : 'var(--bg-glass)';
+    btn.style.borderColor = isDone ? 'var(--success)' : 'var(--border-glass)';
+    btn.style.color = isDone ? '#34d399' : 'white';
+
+    await fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lesson_id: lessonId, completed: isDone })
+    });
+  }
+</script>
+{% endblock %}

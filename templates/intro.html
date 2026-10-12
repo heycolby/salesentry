@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}C30 Digital — Orientation Protocol{% endblock %}
+
+{% block content %}
+<main class="container-narrow">
+  <div style="margin-bottom: 16px;">
+    <div class="meta-code-tag">STAGE::02_EVALUATION // VIDEO_STREAM</div>
+    <h1 style="font-family: var(--font-heading); font-size: clamp(24px, 4vw, 48px); font-weight: 700; margin-top: 4px;">
+      Operational Orientation & Sales Model
+    </h1>
+    <p style="color: var(--color-secondary); font-size: 15px; margin-top: 4px;">
+      {% if lead %}Candidate: <strong style="color: white;">{{ lead.name }}</strong>. {% endif %}Review the pipeline mechanics below. Once evaluated, initiate your intake review.
+    </p>
+  </div>
+
+  <!-- Video Area -->
+  <div class="video-container" id="videoBox">
+    {% if video_url %}
+      <video 
+        id="introVideo" 
+        class="video-element" 
+        src="{{ video_url }}" 
+        controls 
+        playsinline
+        preload="metadata"
+      >
+        Browser does not support HTML5 video stream.
+      </video>
+    {% else %}
+      <!-- Clinical Video Interface Placeholder -->
+      <div class="video-placeholder" id="placeholderPlayer">
+        <div class="play-mock-btn" id="mockPlayBtn">▶</div>
+        <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700; margin-bottom: 4px;">
+          SYSTEM_FEED::ORIENTATION_BRIEF
+        </h3>
+        <p style="color: var(--color-secondary); font-size: 13px; max-width: 440px; margin-bottom: 16px; font-family: var(--font-mono);">
+          [Diagnostic overview: consultative sales triage, pipeline dispatch, margin tiers]
+        </p>
+        <div style="display: flex; align-items: center; gap: 12px; width: 85%; max-width: 380px;">
+          <div class="progress-bar-bg" style="height: 6px;">
+            <div id="mockVideoProgress" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <span id="mockTimer" style="font-family: var(--font-mono); font-size: 12px; color: var(--color-secondary); min-width: 40px;">0:00</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Diagnostic Metrics Bar -->
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; font-family: var(--font-mono); font-size: 12px; color: var(--color-secondary); border-bottom: 1px solid var(--color-border); margin-bottom: 16px;">
+    <span id="statusIndicator">TELEMETRY::WATCHING_SESSION</span>
+    <span id="leadPhoneDisplay">{% if lead %}DISPATCH_LINE::{{ lead.phone }}{% endif %}</span>
+  </div>
+
+  <!-- Restraint on the Ask: Direct, clinical CTA -->
+  <div class="cta-lets-work-wrapper">
+    <button 
+      id="btnLetsWork" 
+      class="btn-lets-work" 
+      onclick="handleLetsWorkClick()"
+    >
+      <span>LET'S WORK</span>
+      <span>→</span>
+    </button>
+    <p style="color: var(--color-secondary); font-size: 13px; margin-top: 10px; font-family: var(--font-mono);">
+      CONFIRMATION DISPATCHES DIRECT ALERT TO COLBY FOR OPERATIONAL REVIEW.
+    </p>
+  </div>
+</main>
+
+<!-- Clinical Notification Confirmation Modal -->
+<div class="modal-backdrop" id="successModal">
+  <div class="modal-card">
+    <div style="width: 48px; height: 48px; border: 1px solid var(--color-primary); background: rgba(57,189,248,0.1); color: var(--color-primary); display: grid; place-items: center; font-size: 1.5rem; margin: 0 auto 16px auto; font-family: var(--font-mono);">
+      OK
+    </div>
+    <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 700; margin-bottom: 8px;">
+      Intake Recorded
+    </h2>
+    <p style="color: var(--color-secondary); font-size: 15px; margin-bottom: 24px; line-height: 1.6;">
+      Your submission has routed to our dispatch system. Colby will review your profile and initiate direct contact at <strong>{% if lead %}{{ lead.phone }}{% else %}your provided number{% endif %}</strong>.
+    </p>
+    <button class="btn-primary" onclick="closeModal()">
+      Acknowledge & Close
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let watchedSeconds = 0;
+  let timerInterval = null;
+  const leadId = "{{ lead.id if lead else '' }}";
+  let hasClickedLetsWork = false;
+
+  const videoElem = document.getElementById('introVideo');
+  if (videoElem) {
+    videoElem.addEventListener('timeupdate', () => {
+      watchedSeconds = Math.floor(videoElem.currentTime);
+      if (videoElem.ended) {
+        document.getElementById('statusIndicator').innerText = "STATUS::VIDEO_COMPLETED";
+      }
+    });
+
+    setInterval(() => {
+      if (!videoElem.paused && leadId) {
+        fetch('/api/track-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lead_id: leadId, seconds: watchedSeconds })
+        });
+      }
+    }, 10000);
+  }
+
+  const mockBtn = document.getElementById('mockPlayBtn');
+  if (mockBtn) {
+    let isPlaying = false;
+    let duration = 60;
+    mockBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        isPlaying = true;
+        mockBtn.innerText = "■";
+        document.getElementById('statusIndicator').innerText = "STATUS::STREAM_ACTIVE";
+        timerInterval = setInterval(() => {
+          watchedSeconds++;
+          const pct = Math.min(100, (watchedSeconds / duration) * 100);
+          document.getElementById('mockVideoProgress').style.width = pct + '%';
+          const mins = Math.floor(watchedSeconds / 60);
+          const secs = watchedSeconds % 60;
+          document.getElementById('mockTimer').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+          if (watchedSeconds >= duration) {
+            clearInterval(timerInterval);
+            isPlaying = false;
+            mockBtn.innerText = "✓";
+            document.getElementById('statusIndicator').innerText = "STATUS::STREAM_COMPLETE";
+          }
+        }, 1000);
+      } else {
+        isPlaying = false;
+        mockBtn.innerText = "▶";
+        clearInterval(timerInterval);
+      }
+    });
+  }
+
+  async function handleLetsWorkClick() {
+    if (hasClickedLetsWork) return;
+
+    const btn = document.getElementById('btnLetsWork');
+    btn.innerHTML = `<span>ROUTING INTAKE...</span>`;
+    btn.style.opacity = '0.7';
+
+    try {
+      const response = await fetch('/api/lets-work', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lead_id: leadId,
+          watched_seconds: watchedSeconds
+        })
+      });
+
+      const res = await response.json();
+      hasClickedLetsWork = true;
+
+      btn.innerHTML = `<span>DISPATCH_LOGGED</span> <span>✓</span>`;
+      btn.style.background = '#1A1A1E';
+      btn.style.color = '#39BDF8';
+      btn.style.border = '1px solid #39BDF8';
+      btn.style.opacity = '1';
+
+      document.getElementById('successModal').classList.add('show');
+    } catch (err) {
+      console.error(err);
+      btn.innerHTML = `<span>DISPATCH_LOGGED</span> <span>✓</span>`;
+      document.getElementById('successModal').classList.add('show');
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('successModal').classList.remove('show');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Control Center • Leads & Onboarding Management{% endblock %}
+
+{% block content %}
+<main class="container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span class="badge-pill mb-1">👑 Administrator Portal</span>
+      <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 800;">
+        Sales Course Command Hub
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Manage inbound applicants, 1-click hire & issue training links, and configure integrations.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="{{ url_for('onboarding_portal') }}" class="nav-btn">Preview Member Course</a>
+    </div>
+  </div>
+
+  <!-- Admin Navigation Tabs -->
+  <div class="admin-tabs">
+    <button class="tab-btn active" onclick="switchTab('tabLeads')">
+      👥 Inbound Leads ({{ leads|length }})
+    </button>
+    <button class="tab-btn" onclick="switchTab('tabMembers')">
+      🎓 Hired Agents ({{ members|length }})
+    </button>
+    <button class="tab-btn" onclick="switchTab('tabSettings')">
+      ⚙️ Slack & Video Settings
+    </button>
+  </div>
+
+  <!-- TAB 1: LEADS PIPELINE -->
+  <div id="tabLeads" class="glass-card" style="padding: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700;">
+        Bio Link Inbound Pipeline
+      </h2>
+      <span style="font-size: 0.82rem; color: var(--text-dim);">
+        Ordered by most recent application
+      </span>
+    </div>
+
+    {% if leads %}
+      <div style="overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Video Watch Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lead in leads %}
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: white;">{{ lead.name }}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">{{ lead.email }}</div>
+                </td>
+                <td>
+                  <a href="tel:{{ lead.phone }}" style="color: #60a5fa; font-weight: 600; text-decoration: underline;">
+                    📞 {{ lead.phone }}
+                  </a>
+                </td>
+                <td>
+                  {% if lead.clicked_lets_work %}
+                    <span class="status-badge applied">🔥 Ready: "Let's Work"</span>
+                  {% elif lead.status == 'hired' %}
+                    <span class="status-badge hired">✅ Hired & Access Granted</span>
+                  {% else %}
+                    <span class="status-badge watching">👁️ Watching Video</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span style="font-size: 0.85rem; color: var(--text-muted);">
+                    {{ lead.watched_seconds }} seconds
+                  </span>
+                </td>
+                <td>
+                  {% if lead.status == 'hired' %}
+                    <button class="btn-sm" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;" onclick="hireLead('{{ lead.id }}')">
+                      Re-issue Link
+                    </button>
+                  {% else %}
+                    <button class="btn-sm btn-hire" onclick="hireLead('{{ lead.id }}')">
+                      Hire & Give Training Link ➔
+                    </button>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No leads captured yet.</p>
+        <p style="font-size: 0.85rem;">Test your bio landing page at <a href="{{ url_for('index') }}" target="_blank" style="color: var(--primary); text-decoration: underline;">{{ request.host_url }}</a></p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- TAB 2: ACTIVE AGENTS -->
+  <div id="tabMembers" class="glass-card" style="padding: 1.5rem; display: none;">
+    <div style="margin-bottom: 1.25rem;">
+      <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700;">
+        Active Team Members & Training Progress
+      </h2>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Course Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in members %}
+            <tr>
+              <td>
+                <div style="font-weight: 600; color: white;">{{ m.name or 'Member' }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ m.email }}</div>
+              </td>
+              <td>
+                <span class="badge-pill" style="font-size: 0.72rem;">{{ m.role|upper }}</span>
+              </td>
+              <td>
+                <span class="status-badge applied">{{ m.status|upper }}</span>
+              </td>
+              <td>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">
+                  {{ m.progress|length }} lessons completed
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 3: SETTINGS & SLACK -->
+  <div id="tabSettings" class="glass-card" style="padding: 2rem; display: none;">
+    <h2 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem;">
+      Platform Integrations
+    </h2>
+    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 2rem;">
+      Configure Slack notifications and Google Cloud video streaming URLs.
+    </p>
+
+    <!-- Slack Webhook -->
+    <div style="margin-bottom: 2rem; padding-bottom: 1.75rem; border-bottom: 1px solid var(--border-glass);">
+      <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">
+        🔔 Slack Incoming Webhook
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        When an applicant clicks <strong>"Let's Work"</strong>, an alert is sent directly to this Slack channel.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="slackWebhookInput">Slack Webhook URL</label>
+        <input 
+          type="url" 
+          id="slackWebhookInput" 
+          class="form-input" 
+          placeholder="https://hooks.slack.com/services/T00/B00/XXXXX"
+          value="{{ settings.slack_webhook_url or '' }}"
+        >
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <button class="btn-sm" style="background: rgba(99, 102, 241, 0.25); color: #c7d2fe; padding: 0.6rem 1.25rem;" onclick="testSlackWebhook()">
+          Test Slack Webhook Ping
+        </button>
+        <span id="slackTestStatus" style="font-size: 0.85rem; display: flex; align-items: center;"></span>
+      </div>
+    </div>
+
+    <!-- Intro Video Source -->
+    <div style="margin-bottom: 2rem;">
+      <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">
+        🎥 Intro Video Source (Google Cloud / Direct URL)
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Paste your Google Cloud Storage object path (e.g. <code>gs://your-bucket/intro.mp4</code> or public URL <code>https://storage.googleapis.com/...</code>).
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="introVideoInput">Intro Video URL</label>
+        <input 
+          type="text" 
+          id="introVideoInput" 
+          class="form-input" 
+          placeholder="https://storage.googleapis.com/my-bucket/intro-vsl.mp4"
+          value="{{ settings.intro_video_url or '' }}"
+        >
+      </div>
+    </div>
+
+    <button class="btn-primary" style="width: auto; padding: 0.85rem 2rem;" onclick="saveAdminSettings()">
+      Save All Settings
+    </button>
+  </div>
+</main>
+
+<!-- HIRE MODAL (Copy Onboarding Link) -->
+<div class="modal-backdrop" id="hireModal">
+  <div class="modal-card">
+    <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(99, 102, 241, 0.2); border: 2px solid var(--primary); display: grid; place-items: center; font-size: 1.75rem; margin: 0 auto 1rem auto;">
+      🎉
+    </div>
+    <h2 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; margin-bottom: 0.25rem;">
+      Candidate Hired!
+    </h2>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+      Send this private 1-click training access link to <strong id="hireCandidateName"></strong>:
+    </p>
+
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
+      <input type="text" id="magicLinkInput" class="form-input" readonly style="font-size: 0.8rem; background: rgba(0,0,0,0.6);">
+      <button class="btn-sm btn-hire" style="padding: 0 1.25rem; white-space: nowrap;" onclick="copyMagicLink()">
+        Copy Link
+      </button>
+    </div>
+
+    <p id="copyConfirmation" style="font-size: 0.8rem; color: var(--success); display: none; margin-bottom: 1rem;">
+      ✓ Link copied to clipboard! Send it via text, WhatsApp, or email.
+    </p>
+
+    <button class="btn-primary" onclick="closeHireModal()">
+      Done
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function switchTab(tabId) {
+    document.getElementById('tabLeads').style.display = 'none';
+    document.getElementById('tabMembers').style.display = 'none';
+    document.getElementById('tabSettings').style.display = 'none';
+
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    event.currentTarget.classList.add('active');
+  }
+
+  async function hireLead(leadId) {
+    try {
+      const res = await fetch(`/admin/leads/${leadId}/hire`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('hireCandidateName').innerText = data.name;
+        document.getElementById('magicLinkInput').value = data.magic_url;
+        document.getElementById('copyConfirmation').style.display = 'none';
+        document.getElementById('hireModal').classList.add('show');
+      } else {
+        alert(data.error || 'Failed to hire lead');
+      }
+    } catch (e) {
+      alert('Error: ' + e);
+    }
+  }
+
+  function copyMagicLink() {
+    const input = document.getElementById('magicLinkInput');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    document.getElementById('copyConfirmation').style.display = 'block';
+  }
+
+  function closeHireModal() {
+    document.getElementById('hireModal').classList.remove('show');
+    location.reload();
+  }
+
+  async function testSlackWebhook() {
+    const url = document.getElementById('slackWebhookInput').value;
+    const statusSpan = document.getElementById('slackTestStatus');
+    statusSpan.innerHTML = '<span style="color: var(--text-dim);">Sending ping...</span>';
+
+    try {
+      const res = await fetch('/admin/settings/slack-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ webhook_url: url })
+      });
+      const data = await res.json();
+      if (data.success) {
+        statusSpan.innerHTML = '<span style="color: var(--success); font-weight: 600;">✓ Slack ping received in channel!</span>';
+      } else {
+        statusSpan.innerHTML = `<span style="color: var(--danger);">✕ ${data.error}</span>`;
+      }
+    } catch (e) {
+      statusSpan.innerHTML = `<span style="color: var(--danger);">✕ Request failed</span>`;
+    }
+  }
+
+  async function saveAdminSettings() {
+    const slackUrl = document.getElementById('slackWebhookInput').value;
+    const videoUrl = document.getElementById('introVideoInput').value;
+
+    const res = await fetch('/admin/settings/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slack_webhook_url: slackUrl,
+        intro_video_url: videoUrl
+      })
+    });
+    const data = await res.json();
+    alert(data.message || 'Saved!');
+  }
+</script>
+{% endblock %}

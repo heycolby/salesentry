@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}C30 Digital — Sales Team Operations{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <header class="site-nav">
+    <div class="nav-container">
+      <a href="https://c30.digital" target="_blank" rel="noopener noreferrer" class="brand-logo">
+        <span class="brand-name">C30 DIGITAL</span>
+      </a>
+      <nav class="nav-links">
+        {% if g.member %}
+          <a href="{{ url_for('onboarding_portal') }}" class="nav-link">Training Pipeline</a>
+          {% if g.member.role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-btn" style="color: var(--color-primary); border-color: var(--color-primary);">Command Center</a>
+          {% endif %}
+          <a href="{{ url_for('logout') }}" class="nav-link" style="color: var(--color-secondary);">Sign Out</a>
+        {% else %}
+          <a href="{{ url_for('login_page') }}" class="nav-btn">Sign In</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

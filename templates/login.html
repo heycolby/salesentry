@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In • Sales Portal{% endblock %}
+
+{% block content %}
+<main class="container-narrow" style="padding-top: 4rem;">
+  <div class="glass-card" style="max-width: 440px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 1.75rem;">
+      <div class="brand-badge" style="margin: 0 auto 1rem auto; width: 44px; height: 44px; font-size: 1.4rem;">🔐</div>
+      <h1 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800;">
+        Member & Admin Sign In
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">
+        Enter your authorized email to receive a passwordless magic sign-in link.
+      </p>
+    </div>
+
+    <form action="{{ url_for('login_page') }}" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="email">Authorized Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-input" 
+          placeholder="your@email.com" 
+          required 
+          autocomplete="email"
+        >
+      </div>
+
+      <button type="submit" class="btn-primary mt-2">
+        <span>Send Sign-In Link</span>
+        <span>→</span>
+      </button>
+
+      <p style="text-align: center; color: var(--text-dim); font-size: 0.78rem; margin-top: 1.25rem;">
+        (Admins: Use <code>admin@example.com</code> or any email listed in <code>ADMIN_EMAILS</code>).
+      </p>
+    </form>
+  </div>
+</main>
+{% endblock %}

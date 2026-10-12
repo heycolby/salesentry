@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}C30 Digital — Sales Architecture Intake{% endblock %}
+
+{% block content %}
+<main class="container-narrow">
+  <section class="bio-hero">
+    <div class="bio-avatar">
+      <img src="{{ url_for('static', filename='images/c30-logo-v2.png') }}?v=2" alt="C30 Digital Logo" class="bio-avatar-img">
+    </div>
+
+    <div class="meta-code-tag">PIPELINE: SALES_INFRASTRUCTURE</div>
+
+    <h1 class="bio-title">
+      C30 Digital <span class="accent-text">Sales Team</span>
+    </h1>
+
+    <p class="bio-subtitle">
+      Orientation and operational evaluation for high-ticket consultative sales agents. Review our pipeline execution model and commission architecture.
+    </p>
+
+    <div class="diagnostic-specs">
+      <span class="spec-badge"><span class="accent">COMPENSATION:</span> 15%–20% Net Margin</span>
+      <span class="spec-badge"><span class="accent">INFRASTRUCTURE:</span> 100% Remote</span>
+      <span class="spec-badge"><span class="accent">TRAINING:</span> Full Protocol</span>
+    </div>
+
+    <!-- Intake Terminal Form -->
+    <div class="lead-form-box">
+      <div class="form-header-bar">
+        <h2 class="form-title">Get Instant Access</h2>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: #fca5a5; padding: 10px 14px; margin-bottom: 14px; font-size: 14px;">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form action="{{ url_for('submit_lead') }}" method="POST">
+        <input type="hidden" name="utm_source" value="{{ utm_source }}">
+
+        <div class="form-group">
+          <label class="form-label" for="name">Legal Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="form-input" 
+            placeholder="Alex Johnson" 
+            required 
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Direct Mobile Contact</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            class="form-input" 
+            placeholder="+1 (555) 234-5678" 
+            required 
+            autocomplete="tel"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Primary Work Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="alex@domain.com" 
+            required 
+            autocomplete="email"
+          >
+        </div>
+
+        <button type="submit" class="btn-primary mt-2">
+          <span>Review Orientation Video</span>
+          <span>→</span>
+        </button>
+
+        <p style="text-align: center; color: var(--color-secondary); font-size: 13px; margin-top: 12px; font-family: var(--font-mono);">
+          DATA_LOG::CONFIDENTIAL // ZERO THIRD-PARTY SHARING
+        </p>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}
